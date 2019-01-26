@@ -69,9 +69,7 @@ app.put("/contact/:id", async (req, res) => {
 
 app.delete("/contact/:id", async (req, res) => {
   try {
-    let contact = await Contact.findByIdAndDelete(req.params.id);
-    contact.name = req.body.name;
-    contact.save();
+    await Contact.findByIdAndDelete(req.params.id);
   } catch (err) {
     res.status(500).send(`Error updating contact: ${err}`);
   }
