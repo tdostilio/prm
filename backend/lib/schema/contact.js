@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-const contactSchema = new mongoose.Schema({
+const contactSchema = new Schema({
   name: String,
   relationship: String,
   lastContact: Date
@@ -8,20 +9,21 @@ const contactSchema = new mongoose.Schema({
 
 const Contact = mongoose.model("Contact", contactSchema);
 
-Contact.methods.createContact = async (params = {}) => {
-  let newContact = new Contact({
+Contact.createContact = async function(params = {}) {
+  let newContact = await Contact.create({
     name: params.name,
     relationship: params.relationship,
     lastContact: Date.now()
   });
   try {
     await newContact.save();
+    return newContact;
   } catch (err) {
     throw err;
   }
 };
 
-Contact.methods.getContact = async (params = {}) => {
+Contact.getContact = async function(params = {}) {
   if (!params.id) {
     throw new Error("No contact ID provided");
   }
@@ -33,7 +35,7 @@ Contact.methods.getContact = async (params = {}) => {
   }
 };
 
-Contact.methods.updateContact = async (params = {}) => {
+Contact.updateContact = async function(params = {}) {
   if (!params) {
     throw new Error("No params provided: exiting");
   }
@@ -48,7 +50,7 @@ Contact.methods.updateContact = async (params = {}) => {
   }
 };
 
-Contact.methods.deleteContact = async (params = {}) => {
+Contact.deleteContact = async function(params = {}) {
   try {
     await Contact.findByIdAndDelete(params.id);
   } catch (err) {

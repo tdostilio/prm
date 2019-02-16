@@ -18,20 +18,10 @@ app.post("/contact", async (req, res) => {
   if (!req.body.name || !req.body.relationship) {
     res.status(404).send("Missing parameters");
   }
-  let newContact = new Contact({
-    name: req.body.name,
-    relationship: req.body.relationship,
-    lastContact: Date.now()
-  });
-  await newContact.save(err => {
-    if (err) {
-      throw new Error(`Error saving contact`);
-    }
-  });
-  console.log(newContact);
+  let newContact = await Contact.createContact(req.body);
   res.status(200).send({
     success: "true",
-    message: newContact.name
+    body: newContact
   });
 });
 
@@ -39,11 +29,7 @@ app.post("/contact", async (req, res) => {
 app.get("/contact/:id", async (req, res) => {
   let contact;
   try {
-    contact = await Contact.find({ _id: req.params.id }, err => {
-      if (err) {
-        res.status(500).send("Server error");
-      }
-    });
+    contact = await Contact.getContact(req.params);
   } catch (err) {
     res.status(500).send({ message: err });
   }
@@ -56,7 +42,7 @@ app.get("/contact/:id", async (req, res) => {
 // Update an existing contact
 app.put("/contact/:id", async (req, res) => {
   try {
-    let contact = await Contact.findById(req.params.id);
+    let contact = await Contact.updateContact(req.params);
     contact.name = req.body.name;
     contact.save();
   } catch (err) {
@@ -69,7 +55,7 @@ app.put("/contact/:id", async (req, res) => {
 
 app.delete("/contact/:id", async (req, res) => {
   try {
-    await Contact.findByIdAndDelete(req.params.id);
+    await Contact.deleteContact(req.params);
   } catch (err) {
     res.status(500).send(`Error deleting contact: ${err}`);
   }
