@@ -71,7 +71,7 @@ app.delete("/contact/:id", async (req, res) => {
   try {
     await Contact.findByIdAndDelete(req.params.id);
   } catch (err) {
-    res.status(500).send(`Error updating contact: ${err}`);
+    res.status(500).send(`Error deleting contact: ${err}`);
   }
   res.status(200).send({
     body: "completed"
